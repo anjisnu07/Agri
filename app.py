@@ -5,16 +5,15 @@ import numpy as np
 import requests
 import config
 import pickle
-
+import joblib  # Import joblib for model persistence
 
 
 crop_recommendation_model_path = 'models/RandomForest.pkl'
-crop_recommendation_model = pickle.load(
-    open(crop_recommendation_model_path, 'rb'))
 
+# Load the model using joblib instead of pickle
+crop_recommendation_model = joblib.load(crop_recommendation_model_path)
 
-
-
+# Define the function to fetch weather data
 def weather_fetch(city_name):
     api_key = config.weather_api_key
     base_url = "http://api.openweathermap.org/data/2.5/weather?"
@@ -32,31 +31,20 @@ def weather_fetch(city_name):
     else:
         return None
 
-
-
-
 app = Flask(__name__)
 
-# render home page
-
-
-@ app.route('/')
+# Render home page
+@app.route('/')
 def home():
-    
     return render_template('crop.html')
 
-# render crop recommendation form page
-
-
-@ app.route('/crop-recommend')
+# Render crop recommendation form page
+@app.route('/crop-recommend')
 def crop_recommend():
     return render_template('crop.html')
 
-
-@ app.route('/crop-predict', methods=['POST'])
+@app.route('/crop-predict', methods=['POST'])
 def crop_prediction():
-    
-
     if request.method == 'POST':
         N = int(request.form['nitrogen'])
         P = int(request.form['phosphorous'])
@@ -64,7 +52,6 @@ def crop_prediction():
         ph = float(request.form['ph'])
         rainfall = float(request.form['rainfall'])
 
-        # state = request.form.get("stt")
         city = request.form.get("city")
 
         if weather_fetch(city) != None:
@@ -76,12 +63,7 @@ def crop_prediction():
             return render_template('crop-result.html', prediction=final_prediction)
 
         else:
-
             return render_template('try_again.html')
 
-
-
-
-# ===============================================================================================
 if __name__ == '__main__':
     app.run(debug=True)
