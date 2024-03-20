@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request,Markup
+from flask import Flask, render_template, request
 import numpy as np
 import requests
 import config
@@ -126,7 +126,7 @@ def fert_recommend():
     else:
         response = ''
         for key in recommendations:
-            response+= Markup(str(fertilizer_dic[key])+'<br>'+'<br>'+'<br>')
+            response+=str(fertilizer_dic[key])
 
         return render_template('fertilizer-result.html', recommendation=response)
 
